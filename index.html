@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Search</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .filter-card {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .filter-card label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    .filter-card select, 
+    .filter-card input,
+    .filter-card button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .price-range {
+      display: flex;
+      justify-content: space-between;
+    }
+    .price-range input {
+      width: 48%;
+    }
+    .property-list {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .property-item {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="filter-card">
+  <label for="city">City</label>
+  <select id="city">
+    <option value="">Select City</option>
+    <option value="chandigarh">Chandigarh</option>
+    <option value="new-chandigarh">New Chandigarh</option>
+    <option value="zirakpur">Zirakpur</option>
+    <option value="mohali">Mohali</option>
+    <option value="kharar">Kharar</option>
+    <option value="derabassi">Derabassi</option>
+    <option value="panchkula">Panchkula</option>
+  </select>
+
+  <label for="category">Property Type</label>
+  <select id="category">
+    <option value="">Select Category</option>
+    <option value="residential">Residential</option>
+    <option value="commercial">Commercial</option>
+  </select>
+
+  <label for="sub-category">Sub-Category</label>
+  <select id="sub-category">
+    <option value="">Select Sub-Category</option>
+    <!-- Residential Sub-Categories -->
+    <optgroup label="Residential">
+      <option value="floor">Floor</option>
+      <option value="flat">Flat</option>
+      <option value="villa">Villa</option>
+      <option value="plot">Plot</option>
+    </optgroup>
+    <!-- Commercial Sub-Categories -->
+    <optgroup label="Commercial">
+      <option value="commercial-plot">Commercial Plot</option>
+      <option value="sco">SCO</option>
+      <option value="booth">Booth</option>
+    </optgroup>
+  </select>
+
+  <label for="price-range">Price Range (₹)</label>
+  <div class="price-range">
+    <input type="number" id="min-price" placeholder="Min Price" min="0" value="0">
+    <input type="number" id="max-price" placeholder="Max Price" max="500000000" value="500000000">
+  </div>
+
+  <label for="specific-location">Location (Sector/Colony/Township/Builder)</label>
+  <input type="text" id="specific-location" placeholder="Enter specific location">
+
+  <button id="search-button">Search Properties</button>
+</div>
+
+<div class="property-list" id="property-results">
+  <!-- Filtered properties will appear here -->
+</div>
+
+<script>
+  // Property data array
+  const properties = [
+    {
+      id: 1,
+      category: "residential",
+      subCategory: "floor",
+      type: "5 BHK Floor",
+      city: "new-chandigarh",
+      specificLocation: "Manohar Infra Project",
+      price: 22500000
+    },
+    {
+      id: 2,
+      category: "commercial",
+      subCategory: "sco",
+      type: "SCO Plot",
+      city: "zirakpur",
+      specificLocation: "VIP Road",
+      price: 150000000
+    }
+  ];
+
+  // Event listener for the search button
+  document.getElementById("search-button").addEventListener("click", function() {
+    const cityFilter = document.getElementById("city").value.toLowerCase();
+    const categoryFilter = document.getElementById("category").value.toLowerCase();
+    const subCategoryFilter = document.getElementById("sub-category").value.toLowerCase();
+    const minPriceFilter = parseInt(document.getElementById("min-price").value, 10);
+    const maxPriceFilter = parseInt(document.getElementById("max-price").value, 10);
+    const specificLocationFilter = document.getElementById("specific-location").value.toLowerCase();
+    const resultsDiv = document.getElementById("property-results");
+
+    // Filter properties based on selected filters
+    const filteredProperties = properties.filter(property => {
+      return (
+        (cityFilter === "" || property.city === cityFilter) &&
+        (categoryFilter === "" || property.category === categoryFilter) &&
+        (subCategoryFilter === "" || property.subCategory === subCategoryFilter) &&
+        (!minPriceFilter || property.price >= minPriceFilter) &&
+        (!maxPriceFilter || property.price <= maxPriceFilter) &&
+        (specificLocationFilter === "" || property.specificLocation.toLowerCase().includes(specificLocationFilter))
+      );
+    });
+
+    // Display filtered results
+    resultsDiv.innerHTML = "";
+    if (filteredProperties.length > 0) {
+      filteredProperties.forEach(property => {
+        const propertyDiv = document.createElement("div");
+        propertyDiv.classList.add("property-item");
+        propertyDiv.innerHTML = `
+          <h3>${property.type}</h3>
+          <p>City: ${property.city.replace("-", " ")}</p>
+          <p>Location: ${property.specificLocation}</p>
+          <p>Price: ₹${property.price.toLocaleString()}</p>
+        `;
+        resultsDiv.appendChild(propertyDiv);
+      });
+    } else {
+      resultsDiv.innerHTML = "<p>No properties found.</p>";
+    }
+  });
+</script>
+
+</body>
+</html>
